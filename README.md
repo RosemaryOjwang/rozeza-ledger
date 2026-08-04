@@ -2,9 +2,9 @@
 
 > Smart Accounting. Intelligent Automation.
 
-Rozeza Ledger is a cloud-based accounting and business automation platform designed to help small and medium-sized businesses simplify financial management, improve operational efficiency, and make better business decisions through intelligent automation.
+Rozeza Ledger is a cloud-based accounting and business automation platform designed to help small and medium-sized businesses simplify financial management, automate accounting processes, and make better business decisions through intelligent insights.
 
-Our mission is to build an intuitive, scalable, and modern accounting platform that combines traditional accounting principles with automation and data-driven insights.
+Our mission is to build a modern, scalable accounting platform tailored for African businesses, combining sound accounting principles with intuitive technology.
 
 ---
 
@@ -16,15 +16,15 @@ To become Africa's leading intelligent accounting and business management platfo
 
 ## Problem Statement
 
-Many small and medium-sized businesses still rely on spreadsheets or outdated accounting systems that are difficult to use, disconnected from daily operations, and provide limited business insights.
+Many SMEs still rely on spreadsheets or outdated accounting systems that are difficult to use, disconnected from daily operations, and provide limited financial insights.
 
-Rozeza Ledger aims to bridge this gap by providing a modern platform that automates accounting processes while delivering actionable financial intelligence.
+Rozeza Ledger aims to bridge this gap by providing an affordable, cloud-based platform that simplifies bookkeeping, automates accounting workflows, and generates meaningful financial reports.
 
 ---
 
 ## MVP Features
 
-The first release will focus on the core accounting functionality:
+The first release will focus on the essential accounting functions:
 
 - User Authentication & Role Management
 - Company Setup
@@ -37,7 +37,7 @@ The first release will focus on the core accounting functionality:
 - Invoicing
 - Payments & Receipts
 - Financial Reports
-  - Profit & Loss
+  - Profit & Loss Statement
   - Balance Sheet
   - Cash Flow Statement
 - Dashboard
@@ -47,59 +47,18 @@ The first release will focus on the core accounting functionality:
 ## Technology Stack
 
 ### Backend
-
 - Django
 - Django REST Framework
 
 ### Frontend
-
 - React
 
 ### Database
-
 - PostgreSQL
 
 ### Version Control
-
 - Git
 - GitHub
-
----
-
-## Development Roadmap
-
-### Phase 1 – Foundation
-
-- Project Architecture
-- Authentication
-- Company Setup
-- Chart of Accounts
-
-### Phase 2 – Accounting Engine
-
-- Journal Entries
-- General Ledger
-- Trial Balance
-
-### Phase 3 – Business Operations
-
-- Customers
-- Suppliers
-- Invoicing
-- Payments
-
-### Phase 4 – Reporting
-
-- Profit & Loss
-- Balance Sheet
-- Cash Flow Statement
-- Dashboard
-
-### Phase 5 – Automation
-
-- Financial Analytics
-- AI-powered Insights
-- Workflow Automation
 
 ---
 
@@ -111,7 +70,6 @@ rozeza-ledger/
 ├── backend/
 ├── frontend/
 ├── docs/
-├── .venv/
 ├── README.md
 ├── requirements.txt
 └── .gitignore
@@ -122,50 +80,84 @@ rozeza-ledger/
 ## Team
 
 ### Rosemary Ojwang
-**Co-founder • Product Lead & Backend Engineer**
+**Co-founder • Product Lead & Technical Lead**
+
+Responsibilities:
 
 - Product Strategy
 - Backend Development (Django)
-- API Design
 - Database Design
-- Business Analysis
+- REST API Development
+- Project Management
+- Technical Documentation
 - Customer Discovery
 
 ---
 
-### Zablon
-**Co-founder • Lead Software Engineer**
-
-- Technical Architecture
-- Frontend Engineering
-- Backend Engineering
-- Code Reviews
-- DevOps & Deployment
-- System Security
-
----
-
 ### Zephaniah
-**Co-founder • Accounting Domain Expert**
+**Co-founder • Head of Finance & Accounting Domain Expert**
+
+Responsibilities:
 
 - Accounting Workflows
 - Financial Controls
 - Business Rules
-- User Acceptance Testing
 - Product Validation
+- User Acceptance Testing
+- Financial Reporting Requirements
+
+---
+
+## Development Principles
+
+We are building Rozeza Ledger with the following principles:
+
+- Build the MVP before expanding features.
+- Design the database before writing business logic.
+- Keep the code modular and maintainable.
+- Document major technical and product decisions.
+- Validate accounting workflows before implementation.
+- Commit small, meaningful changes frequently.
 
 ---
 
 ## Current Status
 
-🚧 MVP under active development.
+🚧 **MVP under active development**
+
+Completed:
+- Project initialization
+- GitHub repository
+- Django backend setup
+- PostgreSQL environment
+- Initial project structure
+- Core Django application
+
+Next Milestone:
+- PostgreSQL integration
+- Company model
+- Chart of Accounts
+- Authentication & User Roles
 
 ---
 
 ## Long-term Vision
 
-Rozeza Ledger is being built as more than an accounting application.
+Rozeza Ledger is envisioned as a complete business management platform.
 
-The long-term vision is to develop a complete business management platform that integrates accounting, inventory, payroll, customer relationship management (CRM), analytics, and intelligent automation into a single cloud-based ecosystem.
+Future products under the **Rozeza** brand may include:
+
+- Rozeza Ledger
+- Rozeza Payroll
+- Rozeza Inventory
+- Rozeza CRM
+- Rozeza HR
+- Rozeza Analytics
+
+Together, these products will form an integrated ecosystem for managing business operations.
 
 ---
+
+## License
+
+This project is currently proprietary and under active development by the Rozeza founders. Licensing terms will be defined before public release.
