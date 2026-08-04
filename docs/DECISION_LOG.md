@@ -19,7 +19,6 @@ Use Django REST Framework for the backend and React for the frontend.
 
 **Decision by**
 - Rosemary
-- Zablon
 
 ---
 
@@ -53,7 +52,6 @@ The name combines the founders' names:
 
 - Ro → Rosemary
 - Ze → Zephaniah
-- Za → Zablon
 
 The "Rozeza" brand allows future products such as:
 
