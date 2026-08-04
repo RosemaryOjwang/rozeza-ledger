@@ -354,8 +354,43 @@ Typical pages should load within a few seconds under normal usage.
 
 ## Authentication
 
-- Django Authentication
-- JWT (planned)
+Rozeza Ledger shall provide secure user authentication and authorization to protect sensitive financial information.
+
+### MVP Features
+
+The system shall support:
+
+- Secure login using email and password.
+- Passwords securely hashed and stored using Django's authentication framework.
+- Password reset via email.
+- Password strength validation.
+- Role-Based Access Control (RBAC).
+- User session management.
+- Secure logout.
+- Account activation through email verification.
+
+### Enhanced Security (Post-MVP)
+
+The system will support:
+
+- Email-based One-Time Password (OTP) as a second authentication factor.
+- Trusted device recognition.
+- Login notifications for new devices.
+- Account lockout after multiple failed login attempts.
+- Session timeout after prolonged inactivity.
+- Audit logging of authentication events.
+- Optional integration with authenticator applications (e.g., Google Authenticator).
+
+### User Roles
+
+The initial version will support the following roles:
+
+- System Administrator
+- Business Owner
+- Accountant
+- Cashier
+
+Additional roles and custom permissions may be introduced in future releases.
 
 ## Version Control
 
