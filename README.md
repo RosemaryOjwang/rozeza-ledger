@@ -123,7 +123,7 @@ We are building Rozeza Ledger with the following principles:
 
 ## Current Status
 
-🚧 **MVP under active development**
+**MVP under active development**
 
 Completed:
 - Project initialization
