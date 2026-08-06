@@ -48,10 +48,10 @@ The goal is to provide an intuitive, secure, and scalable accounting system that
 ## Project Structure
 
 backend/
-├── accounts/          # Authentication & users
-├── companies/         # Companies and company management
-├── core/              # Shared utilities
-└── config/            # Django settings
+├── accounts/
+├── companies/
+├── core/
+└── config/
 
 ---
 
@@ -113,7 +113,7 @@ Current fields include:
 
 ## Team
 
-### Rosemary Ojwang & Charles
+### Rosemary & Charles
 ## Team Development Tasks
 
 ### Current Sprint
