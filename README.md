@@ -47,11 +47,11 @@ The goal is to provide an intuitive, secure, and scalable accounting system that
 
 ## Project Structure
 
-backend/
-├── accounts/
-├── companies/
-├── core/
-└── config/
+backend
+├── accounts
+├── companies
+├── core
+└── config
 
 ---
 
