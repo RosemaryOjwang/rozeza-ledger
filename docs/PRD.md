@@ -6,7 +6,7 @@
 
 **Status:** Draft
 
-**Last Updated:** August 2026
+**Last Updated:** 7th August 2026
 
 ---
 
@@ -354,43 +354,8 @@ Typical pages should load within a few seconds under normal usage.
 
 ## Authentication
 
-Rozeza Ledger shall provide secure user authentication and authorization to protect sensitive financial information.
-
-### MVP Features
-
-The system shall support:
-
-- Secure login using email and password.
-- Passwords securely hashed and stored using Django's authentication framework.
-- Password reset via email.
-- Password strength validation.
-- Role-Based Access Control (RBAC).
-- User session management.
-- Secure logout.
-- Account activation through email verification.
-
-### Enhanced Security (Post-MVP)
-
-The system will support:
-
-- Email-based One-Time Password (OTP) as a second authentication factor.
-- Trusted device recognition.
-- Login notifications for new devices.
-- Account lockout after multiple failed login attempts.
-- Session timeout after prolonged inactivity.
-- Audit logging of authentication events.
-- Optional integration with authenticator applications (e.g., Google Authenticator).
-
-### User Roles
-
-The initial version will support the following roles:
-
-- System Administrator
-- Business Owner
-- Accountant
-- Cashier
-
-Additional roles and custom permissions may be introduced in future releases.
+- Django Authentication
+- JWT (planned)
 
 ## Version Control
 
@@ -494,19 +459,20 @@ These products will share a common authentication system, database architecture,
 
 # 18. Founding Team
 
-## Rosemary Ojwang
+## Rosemary & Charles
 
-**Co-founder | Product Lead & Technical Lead**
+**Co-founders | Product & Engineering Team**
 
-Responsibilities:
+### Responsibilities
 
-- Product Vision
+- Product Vision & Strategy
+- System Architecture
 - Backend Development
 - Database Design
-- API Development
+- REST API Development
 - Project Management
-- Documentation
-- Customer Discovery
+- Technical Documentation
+- Customer Discovery & Requirements Gathering
 
 ---
 
