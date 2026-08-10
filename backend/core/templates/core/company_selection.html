@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Company | Rozeza Ledger</title>
+</head>
+
+<body>
+    <h1>Welcome to Rozeza Ledger</h1>
+
+    <p>Please select a company to continue.</p>
+
+    {% if memberships %}
+        <h2>Your Companies</h2>
+
+        <ul>
+            {% for membership in memberships %}
+                <li>
+                    <strong>{{ membership.company.name }}</strong>
+                    — {{ membership.get_role_display }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You don't currently belong to any active companies.</p>
+    {% endif %}
+</body>
+</html>
