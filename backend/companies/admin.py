@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company
+from .models import Company, Membership
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):
@@ -20,4 +20,24 @@ class CompanyAdmin(admin.ModelAdmin):
         "country",
         "is_active"
 
+    )
+
+@admin.register(Membership)
+class MembeshipAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "company",
+        "role",
+        "is_active",
+        "joined_at"
+    )
+
+    search_fields = (
+        "user__email",
+        "company__name"
+    )
+
+    list_filter = (
+        "role",
+        "is_active"
     )
