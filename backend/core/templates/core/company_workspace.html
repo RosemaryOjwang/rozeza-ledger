@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ company.name }} | Rozeza Ledger</title>
+</head>
+<body>
+
+<h2>Company Information</h2>
+<p><strong>Company:</strong> {{ company.name }}</p>
+<p><strong>Legal Name:</strong> {{ company.legal_name|default:"Not provided" }}</p>
+<p><strong>Country:</strong> {{ company.country }}</p>
+<p><strong>Currency:</strong> {{ company.currency }}</p>
+<p><strong>Your Role:</strong> {{ membership.get_role_display }}</p>
+
+<hr>
+
+<h2>Rozeza Ledger</h2>
+
+<p>Rozeza accounting workspace coming soon.</p>
+
+<hr>
+
+<h2>Company Options</h2>
+
+<a href = "{%url 'company_selection' %}">
+    Switch Company
+</a>
+
+</body>
+</html>

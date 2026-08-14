@@ -79,9 +79,9 @@ rozeza-ledger/
 
 ## Team
 
-### Rosemary & Charles
+### Rosemary
 
-**Co-founders | Product & Engineering Team**
+**Co-founder | Product & Engineering Team**
 
 Responsibilities
 
@@ -97,7 +97,7 @@ Responsibilities
 ---
 
 ### Zephaniah
-**Co-founder • Head of Finance & Accounting Domain Expert**
+**Co-founder | Head of Finance & Accounting Domain Expert**
 
 Responsibilities:
 
