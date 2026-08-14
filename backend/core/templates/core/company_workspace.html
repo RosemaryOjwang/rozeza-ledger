@@ -1,31 +1,437 @@
+{% load static %}
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ company.name }} | Rozeza Ledger</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ company.name }} | Rozeza Ledger
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/style.css' %}"
+    >
+
 </head>
+
+
 <body>
 
-<h2>Company Information</h2>
-<p><strong>Company:</strong> {{ company.name }}</p>
-<p><strong>Legal Name:</strong> {{ company.legal_name|default:"Not provided" }}</p>
-<p><strong>Country:</strong> {{ company.country }}</p>
-<p><strong>Currency:</strong> {{ company.currency }}</p>
-<p><strong>Your Role:</strong> {{ membership.get_role_display }}</p>
+<div class="app">
 
-<hr>
 
-<h2>Rozeza Ledger</h2>
+    <!-- ========================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================= -->
 
-<p>Rozeza accounting workspace coming soon.</p>
+    <aside class="sidebar">
 
-<hr>
+        <div class="logo">
+            Rozeza <span>Ledger</span>
+        </div>
 
-<h2>Company Options</h2>
 
-<a href = "{%url 'company_selection' %}">
-    Switch Company
-</a>
+        <!-- Dashboard -->
+
+        <a
+            href="{% url 'company_workspace' %}"
+            class="nav-link active"
+        >
+            Dashboard
+        </a>
+
+
+        <!-- Accounting -->
+
+        <div class="nav-title">
+            Accounting
+        </div>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Chart of Accounts
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Journal Entries
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            General Ledger
+        </a>
+
+
+        <!-- Business -->
+
+        <div class="nav-title">
+            Business
+        </div>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Sales
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Purchases
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Customers
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Suppliers
+        </a>
+
+
+        <!-- Reports -->
+
+        <div class="nav-title">
+            Reports
+        </div>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Financial Reports
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Settings
+        </a>
+
+    </aside>
+
+
+
+    <!-- ========================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================= -->
+
+    <div class="main">
+
+
+        <!-- ========================= -->
+        <!-- TOP BAR -->
+        <!-- ========================= -->
+
+        <header class="topbar">
+
+
+            <!-- CURRENT COMPANY -->
+
+            <div class="company-selector">
+
+                <strong>
+                    {{ company.name }}
+                </strong>
+
+                <span>
+                    ·
+                </span>
+
+                <a
+                    href="{% url 'company_selection' %}"
+                >
+                    Switch Company
+                </a>
+
+            </div>
+
+
+            <!-- CURRENT USER -->
+
+            <div class="user-area">
+
+                {{ request.user.email }}
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ========================= -->
+        <!-- DASHBOARD CONTENT -->
+        <!-- ========================= -->
+
+        <main class="content">
+
+
+            <!-- WELCOME -->
+
+            <section class="welcome">
+
+                <h1>
+                    Good day,
+                    {{ request.user.first_name|default:"there" }}
+                </h1>
+
+                <p>
+                    Here's an overview of your business.
+                </p>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- SUMMARY CARDS -->
+            <!-- ========================= -->
+
+            <section class="cards">
+
+
+                <!-- CASH & BANK -->
+
+                <div class="card">
+
+                    <div class="card-label">
+                        Cash & Bank
+                    </div>
+
+                    <div class="card-value">
+                        KES 0.00
+                    </div>
+
+                    <div class="card-footer">
+                        Total available balance
+                    </div>
+
+                </div>
+
+
+
+                <!-- RECEIVABLES -->
+
+                <div class="card">
+
+                    <div class="card-label">
+                        Receivables
+                    </div>
+
+                    <div class="card-value">
+                        KES 0.00
+                    </div>
+
+                    <div class="card-footer">
+                        Money owed to you
+                    </div>
+
+                </div>
+
+
+
+                <!-- PAYABLES -->
+
+                <div class="card">
+
+                    <div class="card-label">
+                        Payables
+                    </div>
+
+                    <div class="card-value">
+                        KES 0.00
+                    </div>
+
+                    <div class="card-footer">
+                        Money you owe
+                    </div>
+
+                </div>
+
+
+
+                <!-- NET INCOME -->
+
+                <div class="card">
+
+                    <div class="card-label">
+                        Net Income
+                    </div>
+
+                    <div class="card-value">
+                        KES 0.00
+                    </div>
+
+                    <div class="card-footer">
+                        Current period
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- CHART + TRANSACTIONS -->
+            <!-- ========================= -->
+
+            <section class="dashboard-grid">
+
+
+                <!-- INCOME VS EXPENSES -->
+
+                <div class="panel">
+
+                    <h2>
+                        Income vs Expenses
+                    </h2>
+
+                    <div class="placeholder-chart">
+
+                        <span>
+                            Chart will appear here
+                            once transactions are available.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- RECENT TRANSACTIONS -->
+
+                <div class="panel">
+
+                    <h2>
+                        Recent Transactions
+                    </h2>
+
+
+                    <div class="transaction">
+
+
+                        <div>
+
+                            <div class="transaction-name">
+                                No transactions yet
+                            </div>
+
+                            <div class="transaction-date">
+                                Start recording transactions
+                            </div>
+
+                        </div>
+
+
+                        <div class="transaction-amount">
+                            —
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ========================= -->
+            <!-- QUICK ACTIONS -->
+            <!-- ========================= -->
+
+            <section class="panel">
+
+                <h2>
+                    Quick Actions
+                </h2>
+
+
+                <div class="quick-actions">
+
+
+                    <a
+                        href="#"
+                        class="action-button"
+                    >
+                        Add Transaction
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="action-button secondary"
+                    >
+                        Add Customer
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="action-button secondary"
+                    >
+                        Add Supplier
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="action-button secondary"
+                    >
+                        View Reports
+                    </a>
+
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+</div>
+
 
 </body>
+
 </html>
