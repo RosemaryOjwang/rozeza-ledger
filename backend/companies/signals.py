@@ -16,5 +16,5 @@ def create_company_subscription(sender, instance, created, **kwargs):
             company=instance,
             status=Subscription.Status.TRIAL,
             trial_start=today,
-            trial_end=today + timedelta(days=7),
+            trial_end=today + timedelta(days=365),
         )
