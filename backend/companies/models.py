@@ -73,3 +73,79 @@ class Membership(models.Model):
         return f"{self.user} - {self.company} ({self.get_role_display()})"
 
   
+class Account(models.Model):
+    class AccountType(models.TextChoices):
+        ASSET = "ASSET", "Asset"
+        LIABILITY = "LIABILITY", "Liability"
+        EQUITY = "EQUITY", "Equity"
+        REVENUE = "REVENUE", "Revenue"
+        EXPENSE = "EXPENSE", "Expense"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="accounts",
+    )
+
+    code = models.CharField(
+        max_length=20,
+    )
+    
+    name = models.CharField(
+        max_length=255,
+    )
+
+    account_type = models.CharField(
+        max_length=20,
+        choices=AccountType.choices,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="sub_accounts",
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    is_system = models.BooleanField(
+        default=False,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = ["code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company", "code"],
+                name="unique_account_code_per_company"
+            ),
+            models.UniqueConstraint(
+                fields=["company", "name"],
+                name="unique_account_name_per_company",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.code} - {self.name}"
