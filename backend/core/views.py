@@ -365,3 +365,48 @@ def add_journal_entry(request):
             "accounts": accounts,
         },
     )
+    
+@login_required
+def journal_entry_detail(request, entry_id):
+    company_id = request.session.get("active_company_id")
+
+    if not company_id:
+        return redirect("company_selection")
+
+    membership = get_object_or_404(
+        Membership,
+        user=request.user,
+        company_id=company_id,
+        is_active=True,
+    )
+
+    entry = get_object_or_404(
+        JournalEntry.objects
+        .select_related("created_by")
+        .prefetch_related("lines__account"),
+        id=entry_id,
+        company=membership.company,
+    )
+
+    total_debit = sum(
+        (line.debit for line in entry.lines.all()),
+        Decimal("0.00"),
+    )
+
+    total_credit = sum(
+        (line.credit for line in entry.lines.all()),
+        Decimal("0.00"),
+    )
+
+    return render(
+        request,
+        "core/journal_entry_detail.html",
+        {
+            "membership": membership,
+            "company": membership.company,
+            "entry": entry,
+            "total_debit": total_debit,
+            "total_credit": total_credit,
+            "is_balanced": total_debit == total_credit,
+        },
+    )

@@ -9,6 +9,7 @@ from .views import (
     add_account,
     journal_entries,
     add_journal_entry,
+    journal_entry_detail,
     )
 
 urlpatterns = [
@@ -39,5 +40,10 @@ urlpatterns = [
     "journal-entries/add/",
     add_journal_entry,
     name="add_journal_entry",
+    ),
+    path(
+    "journal-entries/<uuid:entry_id>/",
+    journal_entry_detail,
+    name="journal_entry_detail",
     ),
 ]

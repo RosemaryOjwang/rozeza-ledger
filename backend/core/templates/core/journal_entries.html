@@ -189,9 +189,9 @@
                             <div>
 
                                 <div class="transaction-name">
-
-                                    {{ entry.description|default:"Journal Entry" }}
-
+                                    <a href="{% url 'journal_entry_detail' entry.id %}">
+                                        {{ entry.description|default:"Journal Entry" }}
+                                    </a>
                                 </div>
 
                                 <div class="transaction-date">

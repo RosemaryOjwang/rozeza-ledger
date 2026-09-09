@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Journal Entry - Rozeza Ledger</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #111827;
+            color: white;
+            padding: 24px 16px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 12px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #374151;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .company-name {
+            font-weight: bold;
+        }
+
+        .user-info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #374151;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 10px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background: #f9fafb;
+        }
+
+        .balance-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .balanced {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .unbalanced {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Rozeza Ledger
+        </div>
+
+        <div class="nav-section">
+
+            <div class="nav-title">
+                Main
+            </div>
+
+            <a href="{% url 'company_workspace' %}" class="nav-link">
+                Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <div class="nav-title">
+                Accounting
+            </div>
+
+            <a href="{% url 'chart_of_accounts' %}" class="nav-link">
+                Chart of Accounts
+            </a>
+
+            <a href="{% url 'journal_entries' %}" class="nav-link active">
+                Journal Entries
+            </a>
+
+            <a href="#" class="nav-link">
+                General Ledger
+            </a>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <div class="nav-title">
+                Business
+            </div>
+
+            <a href="#" class="nav-link">Sales</a>
+            <a href="#" class="nav-link">Purchases</a>
+            <a href="#" class="nav-link">Customers</a>
+            <a href="#" class="nav-link">Suppliers</a>
+
+        </div>
+
+
+        <div class="nav-section">
+
+            <div class="nav-title">
+                Reports
+            </div>
+
+            <a href="#" class="nav-link">Financial Reports</a>
+            <a href="#" class="nav-link">Settings</a>
+
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="company-name">
+                {{ company.name }}
+            </div>
+
+            <div class="user-info">
+                {{ request.user.email }}
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <a
+                href="{% url 'journal_entries' %}"
+                class="back-link"
+            >
+                ← Back to Journal Entries
+            </a>
+
+
+            <div class="page-header">
+
+                <h1>
+                    {{ entry.description|default:"Journal Entry" }}
+                </h1>
+
+                <p class="subtitle">
+                    Journal Entry
+                </p>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="details-grid">
+
+                    <div>
+                        <div class="detail-label">
+                            Entry Date
+                        </div>
+
+                        <div class="detail-value">
+                            {{ entry.entry_date|date:"M. j, Y" }}
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="detail-label">
+                            Reference
+                        </div>
+
+                        <div class="detail-value">
+                            {{ entry.reference|default:"—" }}
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="detail-label">
+                            Status
+                        </div>
+
+                        <div class="detail-value">
+                            <span class="status">
+                                {{ entry.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="detail-label">
+                            Created By
+                        </div>
+
+                        <div class="detail-value">
+                            {{ entry.created_by.email }}
+                        </div>
+                    </div>
+
+
+                    <div>
+                        <div class="detail-label">
+                            Created
+                        </div>
+
+                        <div class="detail-value">
+                            {{ entry.created_at|date:"M. j, Y H:i" }}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <h2>
+                    Journal Lines
+                </h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Account</th>
+                            <th>Description</th>
+                            <th class="amount">Debit</th>
+                            <th class="amount">Credit</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for line in entry.lines.all %}
+
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        {{ line.account.code }}
+                                    </strong>
+                                    -
+                                    {{ line.account.name }}
+                                </td>
+
+                                <td>
+                                    {{ line.description|default:"—" }}
+                                </td>
+
+                                <td class="amount">
+                                    {{ line.debit|floatformat:2 }}
+                                </td>
+
+                                <td class="amount">
+                                    {{ line.credit|floatformat:2 }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                        <tr class="total-row">
+
+                            <td colspan="2">
+                                Total
+                            </td>
+
+                            <td class="amount">
+                                {{ total_debit|floatformat:2 }}
+                            </td>
+
+                            <td class="amount">
+                                {{ total_credit|floatformat:2 }}
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+
+                {% if is_balanced %}
+
+                    <div class="balance-box balanced">
+                        ✓ This journal entry is balanced.
+                    </div>
+
+                {% else %}
+
+                    <div class="balance-box unbalanced">
+                        ⚠ This journal entry is not balanced.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>
