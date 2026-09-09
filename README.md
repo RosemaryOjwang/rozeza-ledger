@@ -20,6 +20,7 @@ The initial accounting dashboard interface has also been implemented.
 
 ## Demo
 
+<img width="800" height="388" alt="rozeza_ledger_demo" src="https://github.com/user-attachments/assets/f9bdafe2-cb81-4491-9007-0bf5e35f983f" />
 
 
 ---
