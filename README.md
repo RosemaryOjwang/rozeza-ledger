@@ -19,7 +19,7 @@ The initial accounting dashboard interface has also been implemented.
 ---
 
 ## Demo
-C:\Development\Rozeza\rozeza-ledger\demo\rozeza_ledger_demo.mp4
+
 
 
 ---
