@@ -20,7 +20,7 @@ The initial accounting dashboard interface has also been implemented.
 
 ## Demo
 
-![Watch Rozeza Ledger Demo](demo/rozeza_ledger_demo.mp4)
+<video controls src="demo/rozeza_ledger_demo.mp4" title="Title"></video>
 
 ---
 
