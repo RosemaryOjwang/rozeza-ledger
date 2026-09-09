@@ -10,6 +10,7 @@ from .views import (
     journal_entries,
     add_journal_entry,
     journal_entry_detail,
+    general_ledger,
     )
 
 urlpatterns = [
@@ -46,4 +47,9 @@ urlpatterns = [
     journal_entry_detail,
     name="journal_entry_detail",
     ),
+    path(
+    "general-ledger/",
+    general_ledger,
+    name="general_ledger",
+),
 ]

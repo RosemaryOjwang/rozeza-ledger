@@ -410,3 +410,87 @@ def journal_entry_detail(request, entry_id):
             "is_balanced": total_debit == total_credit,
         },
     )
+    
+@login_required
+def general_ledger(request):
+    company_id = request.session.get("active_company_id")
+
+    if not company_id:
+        return redirect("company_selection")
+
+    membership = get_object_or_404(
+        Membership,
+        user=request.user,
+        company_id=company_id,
+        is_active=True,
+    )
+
+    company = membership.company
+
+    accounts = (
+        Account.objects
+        .filter(
+            company=company,
+            is_active=True,
+        )
+        .order_by("code")
+    )
+
+    selected_account_id = request.GET.get("account")
+
+    selected_account = None
+    ledger_lines = []
+    total_debit = Decimal("0.00")
+    total_credit = Decimal("0.00")
+    running_balance = Decimal("0.00")
+
+    if selected_account_id:
+        selected_account = get_object_or_404(
+            Account,
+            id=selected_account_id,
+            company=company,
+            is_active=True,
+        )
+
+        ledger_lines = (
+            selected_account.journal_lines
+            .filter(
+                journal_entry__company=company,
+                journal_entry__status=JournalEntry.Status.POSTED,
+            )
+            .select_related("journal_entry")
+            .order_by(
+                "journal_entry__entry_date",
+                "journal_entry__created_at",
+            )
+        )
+
+        for line in ledger_lines:
+            total_debit += line.debit
+            total_credit += line.credit
+
+            # Debit-normal accounts increase with debits.
+            if selected_account.account_type in [
+                Account.AccountType.ASSET,
+                Account.AccountType.EXPENSE,
+            ]:
+                running_balance += line.debit - line.credit
+            else:
+                running_balance += line.credit - line.debit
+
+            line.running_balance = running_balance
+
+    return render(
+        request,
+        "core/general_ledger.html",
+        {
+            "membership": membership,
+            "company": company,
+            "accounts": accounts,
+            "selected_account": selected_account,
+            "ledger_lines": ledger_lines,
+            "total_debit": total_debit,
+            "total_credit": total_credit,
+            "running_balance": running_balance,
+        },
+    )
