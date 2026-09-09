@@ -20,8 +20,6 @@ The initial accounting dashboard interface has also been implemented.
 
 ## Demo
 
-The current dashboard provides the initial interface for the Rozeza Ledger financial workspace.
-
 [Watch Rozeza Ledger Demo](demo/rozeza_ledger_demo.mp4)
 
 ---
