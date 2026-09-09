@@ -1,0 +1,247 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Journal Entries | {{ company.name }} | Rozeza Ledger
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Rozeza <span>Ledger</span>
+        </div>
+
+
+        <a
+            href="{% url 'company_workspace' %}"
+            class="nav-link"
+        >
+            Dashboard
+        </a>
+
+
+        <div class="nav-title">
+            Accounting
+        </div>
+
+
+        <a
+            href="{% url 'chart_of_accounts' %}"
+            class="nav-link"
+        >
+            Chart of Accounts
+        </a>
+
+
+        <a
+            href="{% url 'journal_entries' %}"
+            class="nav-link active"
+        >
+            Journal Entries
+        </a>
+
+
+        <a href="#" class="nav-link">
+            General Ledger
+        </a>
+
+
+        <div class="nav-title">
+            Business
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Sales
+        </a>
+
+        <a href="#" class="nav-link">
+            Purchases
+        </a>
+
+        <a href="#" class="nav-link">
+            Customers
+        </a>
+
+        <a href="#" class="nav-link">
+            Suppliers
+        </a>
+
+
+        <div class="nav-title">
+            Reports
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Financial Reports
+        </a>
+
+        <a href="#" class="nav-link">
+            Settings
+        </a>
+
+    </aside>
+
+
+    <div class="main">
+
+
+        <header class="topbar">
+
+            <div class="company-selector">
+
+                <strong>
+                    {{ company.name }}
+                </strong>
+
+                <span>
+                    ·
+                </span>
+
+                <a href="{% url 'company_selection' %}">
+                    Switch Company
+                </a>
+
+            </div>
+
+
+            <div class="user-area">
+
+                {{ request.user.email }}
+
+            </div>
+
+        </header>
+
+
+        <main class="content">
+
+
+            <section class="welcome">
+
+                <h1>
+                    Journal Entries
+                </h1>
+
+                <p>
+                    Record and review financial transactions for
+                    {{ company.name }}.
+                </p>
+
+            </section>
+
+
+            <section class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Entries
+                        </h2>
+
+                    </div>
+
+
+                    <a
+                        href="{% url 'add_journal_entry' %}"
+                        class="action-button"
+                    >
+                        + New Journal Entry
+                    </a>
+
+                </div>
+
+
+                {% if entries %}
+
+                    {% for entry in entries %}
+
+                        <div class="transaction">
+
+                            <div>
+
+                                <div class="transaction-name">
+
+                                    {{ entry.description|default:"Journal Entry" }}
+
+                                </div>
+
+                                <div class="transaction-date">
+
+                                    {{ entry.entry_date }}
+
+                                    {% if entry.reference %}
+                                        · {{ entry.reference }}
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                {{ entry.get_status_display }}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="empty-state">
+
+                        <p>
+                            No journal entries have been recorded yet.
+                        </p>
+
+                        <p>
+                            Start by creating your first journal entry.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

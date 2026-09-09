@@ -149,3 +149,101 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.code} - {self.name}"
+
+class JournalEntry(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "DRAFT", "Draft"
+        POSTED = "POSTED", "Posted"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="journal_entries",
+    )
+
+    entry_date = models.DateField()
+
+    reference = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    description = models.TextField(
+        blank=True,
+    )
+
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.DRAFT,
+    )
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="created_journal_entries",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        ordering = ["-entry_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.entry_date} - {self.description or 'Journal Entry'}"
+
+
+class JournalEntryLine(models.Model):
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+
+    journal_entry = models.ForeignKey(
+        JournalEntry,
+        on_delete=models.CASCADE,
+        related_name="lines",
+    )
+
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name="journal_lines",
+    )
+
+    description = models.CharField(
+        max_length=255,
+        blank=True,
+    )
+
+    debit = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0,
+    )
+
+    credit = models.DecimalField(
+        max_digits=15,
+        decimal_places=2,
+        default=0,
+    )
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.account} - Dr {self.debit} / Cr {self.credit}"
+

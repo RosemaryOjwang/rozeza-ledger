@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>New Journal Entry - Rozeza Ledger</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #111827;
+            color: white;
+            padding: 24px 16px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-title {
+            font-size: 12px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #374151;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .company-name {
+            font-weight: bold;
+        }
+
+        .user-info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #4b5563;
+        }
+
+        .lines-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lines-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #f9fafb;
+            font-size: 13px;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .remove-btn {
+            border: none;
+            background: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #111827;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .btn-add {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .totals-box {
+            width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .balance-status {
+            font-weight: bold;
+            padding-top: 10px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            Rozeza Ledger
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Main</div>
+
+            <a href="{% url 'company_workspace' %}" class="nav-link">
+                Dashboard
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Accounting</div>
+
+            <a href="{% url 'chart_of_accounts' %}" class="nav-link">
+                Chart of Accounts
+            </a>
+
+            <a href="{% url 'journal_entries' %}" class="nav-link active">
+                Journal Entries
+            </a>
+
+            <a href="#" class="nav-link">
+                General Ledger
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Business</div>
+
+            <a href="#" class="nav-link">Sales</a>
+            <a href="#" class="nav-link">Purchases</a>
+            <a href="#" class="nav-link">Customers</a>
+            <a href="#" class="nav-link">Suppliers</a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Reports</div>
+
+            <a href="#" class="nav-link">Financial Reports</a>
+            <a href="#" class="nav-link">Settings</a>
+        </div>
+
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="company-name">
+                {{ company.name }}
+            </div>
+
+            <div class="user-info">
+                {{ request.user.email }}
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>New Journal Entry</h1>
+                    <p class="subtitle">
+                        Record a balanced accounting transaction.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="panel">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="entry_date">
+                                Entry Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="entry_date"
+                                name="entry_date"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="reference">
+                                Reference
+                            </label>
+
+                            <input
+                                type="text"
+                                id="reference"
+                                name="reference"
+                                placeholder="e.g. INV-001"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label for="description">
+                                Description
+                            </label>
+
+                            <input
+                                type="text"
+                                id="description"
+                                name="description"
+                                placeholder="Describe this transaction"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="lines-header">
+
+                        <h2>Journal Lines</h2>
+
+                        <button
+                            type="button"
+                            class="btn btn-add"
+                            onclick="addLine()"
+                        >
+                            + Add Line
+                        </button>
+
+                    </div>
+
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th style="width: 45%;">
+                                    Account
+                                </th>
+
+                                <th style="width: 22%;">
+                                    Debit
+                                </th>
+
+                                <th style="width: 22%;">
+                                    Credit
+                                </th>
+
+                                <th style="width: 11%;">
+                                </th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="journal-lines">
+
+                            <tr class="journal-line">
+
+                                <td>
+
+                                    <select name="account" required>
+
+                                        <option value="">
+                                            Select account
+                                        </option>
+
+                                        {% for account in accounts %}
+
+                                            <option value="{{ account.id }}">
+                                                {{ account.code }} - {{ account.name }}
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </td>
+
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="debit"
+                                        class="amount debit-input"
+                                        step="0.01"
+                                        min="0"
+                                        value="0.00"
+                                    >
+
+                                </td>
+
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="credit"
+                                        class="amount credit-input"
+                                        step="0.01"
+                                        min="0"
+                                        value="0.00"
+                                    >
+
+                                </td>
+
+
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="remove-btn"
+                                        onclick="removeLine(this)"
+                                    >
+                                        ×
+                                    </button>
+                                </td>
+
+                            </tr>
+
+
+                            <tr class="journal-line">
+
+                                <td>
+
+                                    <select name="account" required>
+
+                                        <option value="">
+                                            Select account
+                                        </option>
+
+                                        {% for account in accounts %}
+
+                                            <option value="{{ account.id }}">
+                                                {{ account.code }} - {{ account.name }}
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </td>
+
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="debit"
+                                        class="amount debit-input"
+                                        step="0.01"
+                                        min="0"
+                                        value="0.00"
+                                    >
+
+                                </td>
+
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        name="credit"
+                                        class="amount credit-input"
+                                        step="0.01"
+                                        min="0"
+                                        value="0.00"
+                                    >
+
+                                </td>
+
+
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="remove-btn"
+                                        onclick="removeLine(this)"
+                                    >
+                                        ×
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+
+                    <div class="totals">
+
+                        <div class="totals-box">
+
+                            <div class="total-row">
+                                <span>Total Debit</span>
+                                <strong id="total-debit">0.00</strong>
+                            </div>
+
+                            <div class="total-row">
+                                <span>Total Credit</span>
+                                <strong id="total-credit">0.00</strong>
+                            </div>
+
+                            <div class="total-row balance-status">
+                                <span>Status</span>
+                                <strong id="balance-status">
+                                    Not balanced
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <a
+                        href="{% url 'journal_entries' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Journal Entry
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+function addLine() {
+
+    const tbody = document.getElementById("journal-lines");
+
+    const firstLine = tbody.querySelector(".journal-line");
+
+    const newLine = firstLine.cloneNode(true);
+
+    newLine.querySelector("select").value = "";
+    newLine.querySelector(".debit-input").value = "0.00";
+    newLine.querySelector(".credit-input").value = "0.00";
+
+    tbody.appendChild(newLine);
+
+    updateTotals();
+}
+
+
+function removeLine(button) {
+
+    const tbody = document.getElementById("journal-lines");
+    const lines = tbody.querySelectorAll(".journal-line");
+
+    if (lines.length <= 2) {
+        alert("A journal entry must have at least two lines.");
+        return;
+    }
+
+    button.closest(".journal-line").remove();
+
+    updateTotals();
+}
+
+
+function updateTotals() {
+
+    let totalDebit = 0;
+    let totalCredit = 0;
+
+    document.querySelectorAll(".debit-input").forEach(input => {
+        totalDebit += parseFloat(input.value) || 0;
+    });
+
+    document.querySelectorAll(".credit-input").forEach(input => {
+        totalCredit += parseFloat(input.value) || 0;
+    });
+
+    document.getElementById("total-debit").textContent =
+        totalDebit.toFixed(2);
+
+    document.getElementById("total-credit").textContent =
+        totalCredit.toFixed(2);
+
+    const status = document.getElementById("balance-status");
+
+    if (
+        totalDebit > 0 &&
+        totalDebit.toFixed(2) === totalCredit.toFixed(2)
+    ) {
+        status.textContent = "Balanced";
+    } else {
+        status.textContent = "Not balanced";
+    }
+}
+
+
+document.addEventListener("input", function(event) {
+
+    if (
+        event.target.classList.contains("debit-input") ||
+        event.target.classList.contains("credit-input")
+    ) {
+        updateTotals();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
