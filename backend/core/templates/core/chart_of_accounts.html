@@ -1,0 +1,334 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ company.name }} | Chart of Accounts | Rozeza Ledger
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Rozeza <span>Ledger</span>
+        </div>
+
+
+        <a
+            href="{% url 'company_workspace' %}"
+            class="nav-link"
+        >
+            Dashboard
+        </a>
+
+
+        <div class="nav-title">
+            Accounting
+        </div>
+
+
+        <a
+            href="{% url 'chart_of_accounts' %}"
+            class="nav-link active"
+        >
+            Chart of Accounts
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            Journal Entries
+        </a>
+
+
+        <a
+            href="#"
+            class="nav-link"
+        >
+            General Ledger
+        </a>
+
+
+        <div class="nav-title">
+            Business
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Sales
+        </a>
+
+        <a href="#" class="nav-link">
+            Purchases
+        </a>
+
+        <a href="#" class="nav-link">
+            Customers
+        </a>
+
+        <a href="#" class="nav-link">
+            Suppliers
+        </a>
+
+
+        <div class="nav-title">
+            Reports
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Financial Reports
+        </a>
+
+        <a href="#" class="nav-link">
+            Settings
+        </a>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="company-selector">
+
+                <strong>
+                    {{ company.name }}
+                </strong>
+
+                <span>
+                    ·
+                </span>
+
+                <a href="{% url 'company_selection' %}">
+                    Switch Company
+                </a>
+
+            </div>
+
+
+            <div class="user-area">
+
+                {{ request.user.email }}
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <main class="content">
+
+
+            <section class="welcome">
+
+                <h1>
+                    Chart of Accounts
+                </h1>
+
+                <p>
+                    Manage the accounts for {{ company.name }}.
+                </p>
+
+            </section>
+
+
+            ```html
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <h2>
+                Chart of Accounts
+            </h2>
+
+            <p class="panel-subtitle">
+                Accounts used to record and organize your financial transactions.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'add_account' %}"
+            class="action-button"
+        >
+            + Add Account
+        </a>
+
+    </div>
+
+
+    {% if accounts %}
+
+        <div class="table-container">
+
+            <table class="accounts-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Code
+                        </th>
+
+                        <th>
+                            Account Name
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Parent Account
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for account in accounts %}
+
+                        <tr>
+
+                            <td>
+                                {{ account.code }}
+                            </td>
+
+
+                            <td>
+
+                                {% if account.parent %}
+
+                                    <span class="child-account">
+                                        {{ account.name }}
+                                    </span>
+
+                                {% else %}
+
+                                    <strong>
+                                        {{ account.name }}
+                                    </strong>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ account.account_type }}
+                            </td>
+
+
+                            <td>
+
+                                {% if account.parent %}
+                                    {{ account.parent.name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if account.is_system %}
+
+                                    <span class="status-badge">
+                                        System
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge">
+                                        Custom
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <p>
+                No accounts have been created yet.
+            </p>
+
+            <a
+                href="{% url 'add_account' %}"
+                class="action-button"
+            >
+                + Add Account
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+```
+
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

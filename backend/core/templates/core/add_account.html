@@ -1,0 +1,302 @@
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Add Account | {{ company.name }} | Rozeza Ledger
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Rozeza <span>Ledger</span>
+        </div>
+
+
+        <a
+            href="{% url 'company_workspace' %}"
+            class="nav-link"
+        >
+            Dashboard
+        </a>
+
+
+        <div class="nav-title">
+            Accounting
+        </div>
+
+
+        <a
+            href="{% url 'chart_of_accounts' %}"
+            class="nav-link"
+        >
+            Chart of Accounts
+        </a>
+
+
+        <a href="#" class="nav-link">
+            Journal Entries
+        </a>
+
+        <a href="#" class="nav-link">
+            General Ledger
+        </a>
+
+
+        <div class="nav-title">
+            Business
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Sales
+        </a>
+
+        <a href="#" class="nav-link">
+            Purchases
+        </a>
+
+        <a href="#" class="nav-link">
+            Customers
+        </a>
+
+        <a href="#" class="nav-link">
+            Suppliers
+        </a>
+
+
+        <div class="nav-title">
+            Reports
+        </div>
+
+
+        <a href="#" class="nav-link">
+            Financial Reports
+        </a>
+
+        <a href="#" class="nav-link">
+            Settings
+        </a>
+
+    </aside>
+
+
+    <div class="main">
+
+
+        <header class="topbar">
+
+            <div class="company-selector">
+
+                <strong>
+                    {{ company.name }}
+                </strong>
+
+                <span>
+                    ·
+                </span>
+
+                <a href="{% url 'company_selection' %}">
+                    Switch Company
+                </a>
+
+            </div>
+
+
+            <div class="user-area">
+
+                {{ request.user.email }}
+
+            </div>
+
+        </header>
+
+
+        <main class="content">
+
+
+            <section class="welcome">
+
+                <h1>
+                    Add Account
+                </h1>
+
+                <p>
+                    Create a new account for {{ company.name }}.
+                </p>
+
+            </section>
+
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="message">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+
+            <section class="panel">
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    <div class="form-group">
+
+                        <label for="code">
+                            Account Code
+                        </label>
+
+                        <input
+                            type="text"
+                            id="code"
+                            name="code"
+                            placeholder="e.g. 4050"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Account Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="e.g. Tuition Income"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="account_type">
+                            Account Type
+                        </label>
+
+                        <select
+                            id="account_type"
+                            name="account_type"
+                            required
+                        >
+
+                            <option value="">
+                                Select account type
+                            </option>
+
+                            {% for value, label in account_types %}
+
+                                <option value="{{ value }}">
+                                    {{ label }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="parent">
+                            Parent Account
+                        </label>
+
+                        <select
+                            id="parent"
+                            name="parent"
+                        >
+
+                            <option value="">
+                                No parent account
+                            </option>
+
+                            {% for account in parent_accounts %}
+
+                                <option value="{{ account.id }}">
+                                    {{ account.code }} — {{ account.name }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="quick-actions">
+
+                        <button
+                            type="submit"
+                            class="action-button"
+                        >
+                            Create Account
+                        </button>
+
+
+                        <a
+                            href="{% url 'chart_of_accounts' %}"
+                            class="action-button secondary"
+                        >
+                            Cancel
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+
+            </section>
+
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+```
