@@ -150,5 +150,3 @@ Rozeza Ledger
 └── Accounting
         │
         └── Being implemented
-
-[def]: demo/rozeza_ledger_demo.mp4
