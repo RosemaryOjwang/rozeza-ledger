@@ -1,11 +1,26 @@
+from uuid import uuid4
+
+from django.utils import timezone
+from django.utils.dateparse import parse_date
 from decimal import Decimal, InvalidOperation
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from django.db import transaction
+from django.core.exceptions import ValidationError
 
-from companies.models import Membership, Account, JournalEntry
+from companies.models import (
+    Membership,
+    Account,
+    JournalEntry,
+    AccountMapping,
+)
 
+from companies.journal_entry_service import (
+    generate_journal_preview,
+    post_journal_entry,
+)
 
 @login_required
 def company_selection(request):
@@ -493,4 +508,382 @@ def general_ledger(request):
             "total_credit": total_credit,
             "running_balance": running_balance,
         },
+    )
+    
+
+
+@login_required
+def automated_journal_entry(request):
+    """
+    Generate a journal preview and post it only after confirmation.
+    Pending transaction details are stored in the user's session.
+    """
+
+    company_id = request.session.get("active_company_id")
+
+    membership = (
+        Membership.objects
+        .filter(
+            user=request.user,
+            company_id=company_id,
+            is_active=True,
+        )
+        .select_related("company")
+        .first()
+    )
+
+    if not membership:
+        messages.error(
+            request,
+            "Please select an active company first."
+        )
+        return redirect("company_selection")
+
+    company = membership.company
+
+    accounts = Account.objects.filter(
+        company=company,
+        is_active=True,
+    ).order_by("code")
+
+    transaction_types = AccountMapping.TransactionType.choices
+
+    context = {
+        "company": company,
+        "accounts": accounts,
+        "transaction_types": transaction_types,
+        "entry_date": timezone.localdate().isoformat(),
+    }
+
+    # Retrieve pending previews from the session.
+    pending_previews = request.session.get(
+        "pending_journal_previews", {}
+    )
+
+    if request.method == "POST":
+
+        action = request.POST.get("action", "preview")
+
+        # ==========================================
+        # CONFIRM AND POST
+        # ==========================================
+        if action == "confirm":
+
+            submission_token = request.POST.get(
+                "submission_token"
+            )
+
+            pending = pending_previews.get(
+                submission_token
+            )
+
+            if not pending:
+                messages.error(
+                    request,
+                    "This journal preview has expired or is invalid. "
+                    "Please generate a new preview."
+                )
+                return redirect("automated_journal_entry")
+
+            if (
+                pending.get("company_id") != str(company.id)
+                or pending.get("user_id") != str(request.user.id)
+            ):
+                messages.error(
+                    request,
+                    "This journal preview does not belong to your "
+                    "current company or user."
+                )
+                return redirect("automated_journal_entry")
+
+            try:
+                journal_entry = post_journal_entry(
+                    company=company,
+                    transaction_type=pending["transaction_type"],
+                    selected_account_id=pending["selected_account_id"],
+                    amount=pending["amount"],
+                    entry_date=parse_date(pending["entry_date"]),
+                    created_by=request.user,
+                    submission_token=submission_token,
+                    reference=pending["reference"],
+                    description=pending["description"],
+                )
+
+                messages.success(
+                    request,
+                    "Journal entry posted successfully."
+                )
+
+                return redirect(
+                    "journal_entry_detail",
+                    entry_id=journal_entry.id,
+                )
+
+            except ValidationError as exc:
+                messages.error(
+                    request,
+                    " ".join(exc.messages),
+                )
+                return redirect("automated_journal_entry")
+
+        # ==========================================
+        # GENERATE PREVIEW
+        # ==========================================
+        if action == "preview":
+
+            transaction_type = request.POST.get(
+                "transaction_type"
+            )
+            selected_account_id = request.POST.get(
+                "selected_account"
+            )
+            amount = request.POST.get("amount")
+
+            entered_date = request.POST.get("entry_date")
+            reference = request.POST.get("reference", "").strip()
+            description = request.POST.get("description", "").strip()
+
+            try:
+                if transaction_type not in dict(transaction_types):
+                    raise ValidationError(
+                        "Please select a valid transaction type."
+                    )
+
+                entry_date = (
+                    parse_date(entered_date)
+                    if entered_date
+                    else timezone.localdate()
+                )
+
+                if not entry_date:
+                    raise ValidationError(
+                        "Please enter a valid journal entry date."
+                    )
+
+                if len(reference) > 100:
+                    raise ValidationError(
+                        "Reference cannot exceed 100 characters."
+                    )
+
+                preview = generate_journal_preview(
+                    company=company,
+                    transaction_type=transaction_type,
+                    selected_account_id=selected_account_id,
+                    amount=amount,
+                )
+
+                submission_token = str(uuid4())
+
+                # Store the original transaction details server-side.
+                pending_previews[submission_token] = {
+                    "company_id": str(company.id),
+                    "user_id": str(request.user.id),
+                    "transaction_type": transaction_type,
+                    "selected_account_id": str(selected_account_id),
+                    "amount": str(preview["amount"]),
+                    "entry_date": entry_date.isoformat(),
+                    "reference": reference,
+                    "description": description,
+                }
+
+                request.session["pending_journal_previews"] = (
+                    pending_previews
+                )
+                request.session.modified = True
+
+                context.update({
+                    "preview": preview,
+                    "submission_token": submission_token,
+                    "selected_transaction_type": transaction_type,
+                    "selected_account_id": selected_account_id,
+                    "entered_amount": amount,
+                    "entry_date": entry_date.isoformat(),
+                    "reference": reference,
+                    "description": description,
+                })
+
+            except ValidationError as exc:
+                messages.error(
+                    request,
+                    " ".join(exc.messages),
+                )
+
+    return render(
+        request,
+        "core/automated_journal_entry.html",
+        context,
+    )
+
+
+@login_required
+def account_mappings(request):
+    """
+    Manage transaction account mappings for the active company.
+    """
+
+    company_id = request.session.get("active_company_id")
+
+    membership = Membership.objects.filter(
+        user=request.user,
+        company_id=company_id,
+        is_active=True,
+    ).select_related("company").first()
+
+    if not membership:
+        messages.error(request, "Please select an active company first.")
+        return redirect("company_selection")
+
+    company = membership.company
+
+    accounts = Account.objects.filter(
+        company=company,
+        is_active=True,
+    ).order_by("code")
+
+    transaction_types = AccountMapping.TransactionType.choices
+
+    # Handle mapping deactivation.
+    if request.method == "POST" and request.POST.get("action") == "deactivate":
+        mapping = get_object_or_404(
+            AccountMapping,
+            pk=request.POST.get("mapping_id"),
+            company=company,
+        )
+
+        mapping.is_active = False
+        mapping.save(update_fields=["is_active", "updated_at"])
+
+        messages.success(request, "Account mapping deactivated.")
+        return redirect("account_mappings")
+
+    # Load an existing mapping for editing.
+    editing_mapping = None
+
+    if request.method == "GET" and request.GET.get("edit"):
+        editing_mapping = get_object_or_404(
+            AccountMapping,
+            pk=request.GET.get("edit"),
+            company=company,
+        )
+
+    # Default form values.
+    form_values = {
+        "transaction_type": "",
+        "selected_account": "",
+        "counterpart_account": "",
+        "selected_account_side": AccountMapping.EntrySide.DEBIT,
+    }
+
+    if editing_mapping:
+        form_values = {
+            "transaction_type": editing_mapping.transaction_type,
+            "selected_account": str(editing_mapping.selected_account_id),
+            "counterpart_account": str(editing_mapping.counterpart_account_id),
+            "selected_account_side": editing_mapping.selected_account_side,
+        }
+
+    # Handle creation and editing.
+    if request.method == "POST" and request.POST.get("action") != "deactivate":
+
+        mapping_id = request.POST.get("mapping_id")
+
+        if mapping_id:
+            mapping = get_object_or_404(
+                AccountMapping,
+                pk=mapping_id,
+                company=company,
+            )
+        else:
+            mapping = AccountMapping(company=company)
+            
+        editing_mapping = mapping if mapping_id else None
+
+        form_values = {
+            "transaction_type": request.POST.get("transaction_type", ""),
+            "selected_account": request.POST.get("selected_account", ""),
+            "counterpart_account": request.POST.get("counterpart_account", ""),
+            "selected_account_side": request.POST.get(
+                "selected_account_side", ""
+            ),
+        }
+
+        try:
+            selected_account = Account.objects.get(
+                pk=form_values["selected_account"],
+                company=company,
+                is_active=True,
+            )
+
+            counterpart_account = Account.objects.get(
+                pk=form_values["counterpart_account"],
+                company=company,
+                is_active=True,
+            )
+
+            if selected_account.pk == counterpart_account.pk:
+                raise ValidationError(
+                    "The selected and counterpart accounts must be different."
+                )
+
+            if selected_account.sub_accounts.exists():
+                raise ValidationError(
+                    "The selected account is a parent account. "
+                    "Choose a posting-level account."
+                )
+
+            if counterpart_account.sub_accounts.exists():
+                raise ValidationError(
+                    "The counterpart account is a parent account. "
+                    "Choose a posting-level account."
+                )
+
+            mapping.company = company
+            mapping.transaction_type = form_values["transaction_type"]
+            mapping.selected_account = selected_account
+            mapping.counterpart_account = counterpart_account
+            mapping.selected_account_side = form_values[
+                "selected_account_side"
+            ]
+            mapping.is_active = True
+
+            # Validate model choices, company ownership and uniqueness.
+            mapping.full_clean()
+            mapping.save()
+
+            messages.success(request, "Account mapping saved successfully.")
+            return redirect("account_mappings")
+
+        except Account.DoesNotExist:
+            messages.error(
+                request,
+                "Please select two valid, active accounts belonging to this company.",
+            )
+
+        except ValidationError as exc:
+            messages.error(request, " ".join(exc.messages))
+
+    mappings = AccountMapping.objects.filter(
+        company=company,
+    ).select_related(
+        "selected_account",
+        "counterpart_account",
+    ).order_by(
+        "transaction_type",
+        "selected_account__code",
+    )
+
+    context = {
+        "company": company,
+        "accounts": accounts,
+        "transaction_types": transaction_types,
+        "mappings": mappings,
+        "editing_mapping": editing_mapping,
+        "form_values": form_values,
+        "entry_sides": AccountMapping.EntrySide.choices,
+    }
+
+    return render(
+        request,
+        "core/account_mappings.html",
+        context,
     )

@@ -150,10 +150,26 @@ class Account(models.Model):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
-class JournalEntry(models.Model):
-    class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Draft"
-        POSTED = "POSTED", "Posted"
+class AccountMapping(models.Model):
+    """
+    Defines automatic counterpart account mappings
+    for a company's transaction types.
+    """
+
+    class TransactionType(models.TextChoices):
+        SALE = "SALE", "Sale"
+        PURCHASE = "PURCHASE", "Purchase"
+        EXPENSE = "EXPENSE", "Expense"
+        CUSTOMER_RECEIPT = "CUSTOMER_RECEIPT", "Customer Receipt"
+        SUPPLIER_PAYMENT = "SUPPLIER_PAYMENT", "Supplier Payment"
+        BANK_TRANSFER = "BANK_TRANSFER", "Bank Transfer"
+        LOAN_RECEIVED = "LOAN_RECEIVED", "Loan Received"
+        LOAN_REPAYMENT = "LOAN_REPAYMENT", "Loan Repayment"
+        CAPITAL_CONTRIBUTION = "CAPITAL_CONTRIBUTION", "Capital Contribution"
+
+    class EntrySide(models.TextChoices):
+        DEBIT = "DEBIT", "Debit"
+        CREDIT = "CREDIT", "Credit"
 
     id = models.UUIDField(
         primary_key=True,
@@ -164,45 +180,141 @@ class JournalEntry(models.Model):
     company = models.ForeignKey(
         Company,
         on_delete=models.CASCADE,
-        related_name="journal_entries",
+        related_name="account_mappings",
+    )
+
+    transaction_type = models.CharField(
+        max_length=30,
+        choices=TransactionType.choices,
+    )
+
+    selected_account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name="selected_mappings",
+    )
+
+    counterpart_account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name="counterpart_mappings",
+    )
+
+    selected_account_side = models.CharField(
+        max_length=6,
+        choices=EntrySide.choices,
+    )
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "company",
+                    "transaction_type",
+                    "selected_account",
+                ],
+                name="unique_company_transaction_account_mapping",
+            )
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+
+        if self.selected_account_id == self.counterpart_account_id:
+            raise ValidationError(
+                "Selected account and counterpart account "
+                "cannot be the same."
+            )
+
+        if self.selected_account_id and self.company_id:
+            if self.selected_account.company_id != self.company_id:
+                raise ValidationError(
+                    "Selected account must belong to this company."
+                )
+
+        if self.counterpart_account_id and self.company_id:
+            if self.counterpart_account.company_id != self.company_id:
+                raise ValidationError(
+                    "Counterpart account must belong to this company."
+                )
+
+    def __str__(self):
+        return (
+            f"{self.company} - "
+            f"{self.get_transaction_type_display()} - "
+            f"{self.selected_account} -> "
+            f"{self.counterpart_account}"
+        )
+
+
+
+class JournalEntry(models.Model):
+
+    class Status(models.TextChoices):
+        DRAFT = "DRAFT", "Draft"
+        POSTED = "POSTED", "Posted"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="journal_entries"
+    )
+
+    transaction_type = models.CharField(
+        max_length=30,
+        choices=AccountMapping.TransactionType.choices
     )
 
     entry_date = models.DateField()
 
     reference = models.CharField(
         max_length=100,
-        blank=True,
+        blank=True
     )
 
     description = models.TextField(
-        blank=True,
+        blank=True
     )
 
     status = models.CharField(
         max_length=10,
         choices=Status.choices,
-        default=Status.DRAFT,
+        default=Status.DRAFT
+    )
+
+    submission_token = models.UUIDField(
+        null=True,
+        blank=True,
+        unique=True,
+        editable=False
     )
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
-        related_name="created_journal_entries",
+        related_name="created_journal_entries"
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-    )
-
-    updated_at = models.DateTimeField(
-        auto_now=True,
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["-entry_date", "-created_at"]
 
     def __str__(self):
-        return f"{self.entry_date} - {self.description or 'Journal Entry'}"
+        return f"{self.company.name} - {self.entry_date} - {self.transaction_type}"
 
 
 class JournalEntryLine(models.Model):

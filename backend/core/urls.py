@@ -11,6 +11,8 @@ from .views import (
     add_journal_entry,
     journal_entry_detail,
     general_ledger,
+    automated_journal_entry,
+    account_mappings,
     )
 
 urlpatterns = [
@@ -51,5 +53,15 @@ urlpatterns = [
     "general-ledger/",
     general_ledger,
     name="general_ledger",
-),
+    ),
+    path(
+    "journal-entries/automated/",
+    automated_journal_entry,
+    name="automated_journal_entry",
+    ),
+    path(
+    "account-mappings/",
+    account_mappings,
+    name="account_mappings",
+    ),
 ]

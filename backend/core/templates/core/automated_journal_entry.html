@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Journal Entry | Rozeza Ledger</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: auto;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        h1, h2 {
+            margin-top: 0;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd2d8;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        button {
+            background: #176b52;
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #10543f;
+        }
+
+        .confirm-button {
+            background: #176b52;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .confirm-button:hover {
+            background: #10543f;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e6ea;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f3f5;
+        }
+
+        .totals {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #176b52;
+            font-weight: bold;
+        }
+
+        .messages {
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #fff0ed;
+            color: #a93226;
+            border-radius: 6px;
+        }
+
+        .note {
+            color: #65727d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .confirmation-note {
+            background: #eef7f2;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .transaction-details p {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="panel">
+
+        <h1>Automated Journal Entry</h1>
+
+        <p>
+            Company:
+            <strong>{{ company.name }}</strong>
+        </p>
+
+        <p class="note">
+            Enter your transaction details. Rozeza Ledger will
+            automatically generate the corresponding debit and
+            credit entries using your company's configured
+            account mappings.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="preview">
+
+            <div class="field">
+                <label for="transaction_type">
+                    Transaction Type
+                </label>
+
+                <select
+                    name="transaction_type"
+                    id="transaction_type"
+                    required
+                >
+                    <option value="">Select transaction type</option>
+
+                    {% for value, label in transaction_types %}
+                        <option
+                            value="{{ value }}"
+                            {% if selected_transaction_type == value %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="selected_account">
+                    Directly Affected Account
+                </label>
+
+                <select
+                    name="selected_account"
+                    id="selected_account"
+                    required
+                >
+                    <option value="">Select account</option>
+
+                    {% for account in accounts %}
+                        <option
+                            value="{{ account.id }}"
+                            {% if selected_account_id == account.id|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ account.code }} - {{ account.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="amount">Transaction Amount (KES)</label>
+
+                <input
+                    type="number"
+                    name="amount"
+                    id="amount"
+                    min="0.01"
+                    step="0.01"
+                    value="{{ entered_amount|default:'' }}"
+                    placeholder="Enter transaction amount"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="entry_date">Transaction Date</label>
+
+                <input
+                    type="date"
+                    name="entry_date"
+                    id="entry_date"
+                    value="{{ entry_date }}"
+                    required
+                >
+            </div>
+
+            <div class="field">
+                <label for="reference">Reference (Optional)</label>
+
+                <input
+                    type="text"
+                    name="reference"
+                    id="reference"
+                    maxlength="100"
+                    value="{{ reference|default:'' }}"
+                    placeholder="e.g. INV-001 or receipt number"
+                >
+            </div>
+
+            <div class="field">
+                <label for="description">Description (Optional)</label>
+
+                <textarea
+                    name="description"
+                    id="description"
+                    placeholder="Describe the transaction"
+                >{{ description|default:'' }}</textarea>
+            </div>
+
+            <button type="submit">
+                Generate Journal Preview
+            </button>
+
+        </form>
+
+    </div>
+
+
+    {% if preview %}
+
+        <div class="panel">
+
+            <h2>Journal Entry Preview</h2>
+
+            <div class="transaction-details">
+
+                <p>
+                    Transaction:
+                    <strong>{{ preview.transaction_type }}</strong>
+                </p>
+
+                <p>
+                    Date:
+                    <strong>{{ entry_date }}</strong>
+                </p>
+
+                <p>
+                    Reference:
+                    <strong>{{ reference|default:"Not provided" }}</strong>
+                </p>
+
+                <p>
+                    Description:
+                    <strong>{{ description|default:"Not provided" }}</strong>
+                </p>
+
+                <p>
+                    Amount:
+                    <strong>
+                        KES {{ preview.amount|floatformat:2 }}
+                    </strong>
+                </p>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Account</th>
+                            <th>Debit (KES)</th>
+                            <th>Credit (KES)</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for line in preview.lines %}
+                            <tr>
+                                <td>
+                                    {{ line.account.code }} -
+                                    {{ line.account.name }}
+                                </td>
+
+                                <td>
+                                    {{ line.debit|floatformat:2 }}
+                                </td>
+
+                                <td>
+                                    {{ line.credit|floatformat:2 }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th>Total</th>
+
+                            <th>
+                                {{ preview.total_debit|floatformat:2 }}
+                            </th>
+
+                            <th>
+                                {{ preview.total_credit|floatformat:2 }}
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+
+            <div class="totals success">
+
+                {% if preview.is_balanced %}
+                    <p>Balanced: Yes</p>
+                    <p>Amount: KES {{ preview.amount|floatformat:2 }}</p>
+                {% else %}
+                    <p>Balanced: No</p>
+                {% endif %}
+
+            </div>
+
+            {% if preview.is_balanced %}
+
+                <div class="confirmation-note">
+
+                    <p>
+                        <strong>Review your transaction carefully.</strong>
+                    </p>
+
+                    <p class="note">
+                        Confirming this transaction will save the journal
+                        entry and its debit and credit lines, and post it
+                        to your General Ledger.
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="action"
+                            value="confirm"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="submission_token"
+                            value="{{ submission_token }}"
+                        >
+
+                        <button
+                            type="submit"
+                            class="confirm-button"
+                        >
+                            Confirm and Post Journal Entry
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
